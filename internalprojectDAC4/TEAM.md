@@ -8,13 +8,13 @@
 
 | # | Member | Workstream | Files/folders they own | Status |
 |---|--------|-----------|------------------------|--------|
-| 1 | [Name] | Project lead / integration: keeps everyone aligned, merges work | `app.py`, `requirements.txt`, whole repo (review) | Not started |
-| 2 | [Name] | Data and model: Kaggle dataset, cleaning, training XGBoost | `data/`, `model/` | Not started |
-| 3 | [Name] | Database and services: Supabase tables, data loading, predictor, login | `database/`, `services/` | Not started |
-| 4 | [Name] | Student interface | `views/student_dashboard.py` | Not started |
-| 5 | [Name] | Teacher interface | `views/teacher_dashboard.py` | Not started |
-| 6 | [Name] | Testing, privacy and ethics | `tests/`, `docs/ethics*` | Not started |
-| 7 | [Name] | Documentation and presentation | `docs/` | Not started |
+| 1 | [Ayushi] | Project lead / integration: keeps everyone aligned, merges work | `app.py`, `requirements.txt`, whole repo (review) | Not started |
+| 2 | [Ayushi] | Data and model: Kaggle dataset, cleaning, training XGBoost | `data/`, `model/` | Not started |
+| 3 | [Akshaya] | Database and services: Supabase tables, data loading, predictor, login | `database/`, `services/` | Not started |
+| 4 | [Kaviya] | Student interface | `views/student_dashboard.py` | Not started |
+| 5 | [Hannah] | Teacher interface | `views/teacher_dashboard.py` | Not started |
+| 6 | [Yuki] | Testing, privacy and ethics | `tests/`, `docs/ethics*` | Not started |
+| 7 | [Yuan Ling] | Documentation and presentation | `docs/` | Not started |
 
 Shared: `components/` (charts, styles, metric cards) is edited by roles 4 and 5. Tell the other one via `docs/requests.md` before changing something they use.
 
