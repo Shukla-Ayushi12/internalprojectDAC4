@@ -13,7 +13,7 @@
 | 3 | [Akshaya] | Database and services: Supabase tables, data loading, predictor, login | `database/`, `services/` | Not started |
 | 4 | [Kaviya] | Student interface | `views/student_dashboard.py` | Not started |
 | 5 | [Hannah] | Teacher interface | `views/teacher_dashboard.py` | Not started |
-| 6 | [Yuki] | Testing, privacy and ethics | `tests/`, `docs/ethics*` | Not started |
+| 6 | [Yuki/Kimi] | Testing, privacy and ethics | `tests/`, `docs/ethics*` | Not started |
 | 7 | [Yuan Ling] | Documentation and presentation | `docs/` | Not started |
 
 Shared: `components/` (charts, styles, metric cards) is edited by roles 4 and 5. Tell the other one via `docs/requests.md` before changing something they use.
