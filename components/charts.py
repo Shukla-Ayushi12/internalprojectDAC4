@@ -7,22 +7,22 @@ import altair as alt
 import pandas as pd
 
 
-def gpa_distribution(predicted_gpas: pd.Series, at_risk_below: float) -> alt.Chart:
-    """Histogram of predicted GPAs, with a red line at the at-risk cut-off.
+def score_distribution(scores: pd.Series, flag_at_or_below: float) -> alt.Chart:
+    """Histogram of module scores (0-100%), with a red line at the flag cut-off.
 
-    Teachers use it to see at a glance how the class is spread out and how
-    many students fall below the line.
+    Teachers use it to see at a glance how a module's results are spread and
+    how many students fall at or below the intervention line.
     """
-    data = pd.DataFrame({"Predicted GPA": predicted_gpas})
+    data = pd.DataFrame({"Score (%)": scores.dropna()})
 
     bars = (
         alt.Chart(data)
         .mark_bar(color="#4C78A8")
         .encode(
             x=alt.X(
-                "Predicted GPA:Q",
-                bin=alt.Bin(extent=[0, 4], step=0.25),
-                title="Predicted GPA (estimate)",
+                "Score (%):Q",
+                bin=alt.Bin(extent=[0, 100], step=5),
+                title="Module score (%)",
             ),
             y=alt.Y("count():Q", title="Number of students"),
             tooltip=[alt.Tooltip("count():Q", title="Students")],
@@ -30,9 +30,9 @@ def gpa_distribution(predicted_gpas: pd.Series, at_risk_below: float) -> alt.Cha
     )
 
     cutoff = (
-        alt.Chart(pd.DataFrame({"cutoff": [at_risk_below]}))
+        alt.Chart(pd.DataFrame({"cutoff": [flag_at_or_below]}))
         .mark_rule(color="#D62728", strokeDash=[6, 4], size=2)
-        .encode(x="cutoff:Q", tooltip=[alt.Tooltip("cutoff:Q", title="At-risk line")])
+        .encode(x="cutoff:Q", tooltip=[alt.Tooltip("cutoff:Q", title="Flag line (%)")])
     )
 
-    return (bars + cutoff).properties(height=280)
+    return (bars + cutoff).properties(height=260)
