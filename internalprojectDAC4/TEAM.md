@@ -1,70 +1,59 @@
-# TEAM.md: Who Does What
+# Team roles and handoff
 
-> This is the single source of truth for task ownership.
-> AI agents (Claude Code, Codex) must read this file and only work on the area owned by the person they are helping.
-> Folder names refer to the layout in `PROJECT.md`.
+This file is the source of truth for task ownership. Paths are relative to the repository root. See [PROJECT.md](PROJECT.md) for the architecture and [WORKFLOW.md](WORKFLOW.md) for collaboration.
 
-## Roles
+| # | Member | Workstream | Files and folders owned | Current status |
+| --- | --- | --- | --- | --- |
+| 1 | Ayushi | Project lead and integration | `app.py`, `requirements.txt`, whole-repo review | App shell, integration, and deployment pending |
+| 2 | Ayushi | Data and model | `data/`, `model/` | Cleaned sample, trained model, and evaluation available |
+| 3 | Akshaya | Database and services | `database/`, `services/` | Implemented and verified in development. Integration handoff ready. |
+| 4 | Kaviya | Student interface | `views/student_dashboard.py` | Streamlit integration pending |
+| 5 | Hannah | Teacher interface | `views/teacher_dashboard.py` | Streamlit integration pending |
+| 6 | Yuki / Kimi | Testing, privacy, and ethics | `tests/`, `docs/ethics*` | Browser-level acceptance, fairness, and privacy review pending |
+| 7 | Yuan Ling | Documentation and presentation | `docs/` | Project reference available. Report, slides, and demo script pending. |
 
-| # | Member | Workstream | Files/folders they own | Status |
-|---|--------|-----------|------------------------|--------|
-| 1 | [Ayushi] | Project lead / integration: keeps everyone aligned, merges work | `app.py`, `requirements.txt`, whole repo (review) | Not started |
-| 2 | [Ayushi] | Data and model: Kaggle dataset, cleaning, training XGBoost | `data/`, `model/` | Not started |
-| 3 | [Akshaya] | Database and services: Supabase tables, data loading, predictor, login | `database/`, `services/` | Not started |
-| 4 | [Kaviya] | Student interface | `views/student_dashboard.py` | Not started |
-| 5 | [Hannah] | Teacher interface | `views/teacher_dashboard.py` | Not started |
-| 6 | [Yuki/Kimi] | Testing, privacy and ethics | `tests/`, `docs/ethics*` | Not started |
-| 7 | [Yuan Ling] | Documentation and presentation | `docs/` | Not started |
+Kaviya and Hannah share `components/` and coordinate shared chart and theme changes. For a cross-owner change, discuss the request with the owner and record it in the team’s request log when follow-up is needed. With six team members, the testing and documentation workstreams can be combined as in the original team plan.
 
-Shared: `components/` (charts, styles, metric cards) is edited by roles 4 and 5. Tell the other one via `docs/requests.md` before changing something they use.
+## Handoff by workstream
 
-(With 6 people, merge roles 6 and 7.)
+### Data and model
 
-## Task breakdown
+- [x] Document the source data columns and provide a checked-in sample.
+- [x] Supply the cleaning, training, and evaluation scripts and the saved artifact.
+- [x] Record MAE, R², and baseline comparisons in [Model Results](../docs/model-results.md).
+- [x] Document the [demo feature mapping](../docs/dataset-columns.md#demo-feature-mapping) used by the backend.
+- Full raw and cleaned files stay local to the model workflow.
 
-### 2. Data and model
-- [ ] Download the Kaggle dataset into `data/raw/` (local only, never committed)
-- [ ] Write the real column list into `docs/dataset-columns.md`
-- [ ] With role 3, decide how the CSV columns map to the database tables
-- [ ] Clean data (missing values, formats) into `data/processed/`
-- [ ] Make a small anonymised sample in `data/sample/`
-- [ ] Train XGBoost model to predict the semester GPA (`model/train.py`)
-- [ ] Evaluate (MAE, R²) and write results to `docs/`
-- [ ] Save the model file in `model/artifacts/` and write a short "how to use" note
+### Database and services
 
-### 3. Database and services
-- [ ] Create the Supabase project and share access with the team
-- [ ] Write `database/schema.sql` for `students`, `subjects`, `grades` (and the fourth table once decided)
-- [ ] Turn on Row Level Security and set who can see what
-- [ ] Write `database/seed.py` to load cleaned data into Supabase
-- [ ] `services/database.py`: connect to Supabase using secrets
-- [ ] `services/data_loader.py`: functions to fetch a student's grades and a class's students (cached)
-- [ ] `services/predictor.py`: load the model and return a predicted GPA (use a dummy model until the real one is ready)
-- [ ] `services/auth.py`: role selection / login (student vs teacher)
+- [x] Deploy the seven-table Supabase schema with grants and RLS in the development project.
+- [x] Generate and reconcile the fictional cohort. Verify that an identical seed rerun preserves rows and revisions.
+- [x] Implement inference and forecast publication. Verify the 24 latest forecasts and an unchanged publisher rerun.
+- [x] Provision and link demo Auth identities. Verify student self-access and teacher module isolation through live sessions.
+- [x] Supply the [dashboard integration contract](../services/README.md) and [database runbook](../database/README.md).
+- [ ] Share the backend changes through the team’s Git review workflow and arrange secure access to demo credentials.
 
-### 4. Student interface
-- [ ] Page showing predicted GPA and GPA trend
-- [ ] Simple explanation of what influences the prediction
-- [ ] Clear disclaimer that it is an estimate
+### Student interface
 
-### 5. Teacher interface
-- [ ] Class list with predicted GPAs
-- [ ] Highlight at-risk students
-- [ ] Filter/sort
+- [ ] Use the signed-in session and the backend's `student_profile()`.
+- [ ] Show actual history and the latest next-semester forecast, with separate GPA and CGPA warnings.
+- [ ] Provide an unavailable state and label forecasts as estimates. Review any proposed personal model explanations with the model workstream.
 
-### 6. Testing, privacy and ethics
-- [ ] Test the full flow with sample data
-- [ ] Check model fairness across groups
-- [ ] Check that students cannot see other students' data
-- [ ] Write privacy notes (who can see what)
+### Teacher interface
 
-### 7. Documentation and presentation
-- [ ] Meeting notes
-- [ ] Final report
-- [ ] Slides and demo script
+- [ ] Use the backend's assigned offerings, roster, and scoped student profile methods.
+- [ ] Show each offering's results, attendance, and intervention flags, including pending and unflagged students.
+- [ ] Add module and semester filters and roster sorting as needed.
 
-## Dependencies (who waits on whom)
-- Interfaces (4, 5) need the function names and outputs from `services/` (role 3). Agree these early.
-- Role 3 needs the saved model from role 2 for the predictor (use a dummy model until it's ready).
-- Role 3 needs the cleaned data and column mapping from role 2 to seed the database.
-- The fourth database table must be decided by the project lead before `schema.sql` is final.
+### Testing, privacy, and documentation
+
+- [ ] Verify the integrated Streamlit sign-in, session lifecycle, display states, and role switching with development accounts.
+- [ ] Write the privacy and ethics notes and assess model suitability beyond the synthetic demo.
+- [ ] Prepare the meeting notes, final report, slides, and demo script.
+
+## Dependencies
+
+- The Streamlit shell and both dashboards can integrate using the [backend interfaces](../services/README.md).
+- Application-level acceptance depends on the integrated pages and access to development demo accounts.
+- The saved model and checked-in sample support local verification. Access to the full dataset is needed to rerun model training and evaluation.
+- The project lead reviews and merges the workstreams and coordinates the app deployment.

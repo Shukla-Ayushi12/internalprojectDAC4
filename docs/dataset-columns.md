@@ -1,10 +1,6 @@
-# Dataset Columns
+# Dataset and feature mapping
 
-**Dataset:** Semester GPA Prediction Dataset (Kaggle, asadirfanmzg)
-**File:** `perfect_academic_dataset_1m.csv`
-**Size:** 1,000,000 rows, 11 columns
-**Data quality:** no missing values, no duplicate rows
-**Note:** The data is synthetic (not real students).
+The model workstream profiled the synthetic [Semester GPA Prediction Dataset](https://www.kaggle.com/datasets/asadirfanmzg/semester-gpa-prediction-dataset). Its source file, `perfect_academic_dataset_1m.csv`, was documented with 1,000,000 rows, 11 columns, and no missing or duplicate rows. The repository includes a [1,000-row sample](../data/sample/sample_dataset.csv) with the same column names. The ranges and correlations below come from the original source profile.
 
 ## Columns
 
@@ -22,24 +18,30 @@
 | `workload_level` | whole number | Workload rating | 1 – 10 |
 | `target_gpa` | decimal | **The GPA the model predicts** | 0.44 – 4.0 |
 
-## Target and inputs
+## Training and demo use
 
-- **Target (what we predict):** `target_gpa`
-- **Inputs (what the model uses):** the other 10 columns
+The rows are synthetic academic snapshots. Student identities, module results, semester identifiers, and teaching assignments come from the demo generator. The dataset provides no timeline or stable student identifiers for validating predictions across real terms.
 
-## What the dataset does NOT contain
+For training, `target_gpa` is the label and the other ten columns are features. The model workflow interprets the recorded scores as inputs available at prediction time and `target_gpa` as the next-semester outcome. This interpretation is a modelling assumption. Longitudinal data with explicit terms and feature timestamps would be needed to validate it for real use. Predictions describe the synthetic demo setting.
 
-- No student ID
-- No subject or course
-- No semester number
-- No teacher or class
+The [cleaning script](../data/clean_data.py) reads the download from `data/raw/`, checks columns and valid ranges, removes missing rows and duplicates, and writes to `data/processed/` and `data/sample/`. Raw and processed data directories are ignored. The saved artifact and checked-in sample support ordinary backend development. Rerunning [training](../model/train.py) writes the model and importance artifacts. Rerunning [evaluation](../model/evaluate.py) regenerates the Markdown metrics report.
 
-Each row is one student's snapshot plus the GPA to predict. This affects the database design, so the project lead must decide how to handle it (see `docs/requests.md`).
+## Demo feature mapping
 
-## Assumptions to confirm
+The publisher reads the following features from the student's latest eligible `semester_records` row.
 
-- The score columns (assignments, quiz, midterm, final) belong to the *current* semester, and `target_gpa` is the *next* semester's GPA. If this is wrong, some inputs could leak the answer and must be removed.
-- Postgres-friendly names: all column names are already lowercase with underscores, so no renaming is needed for the database.
+| Model feature | Database column | Demo value source |
+| --- | --- | --- |
+| `current_cgpa` | `cumulative_gpa` | Calculated from all completed module results and credits to date. |
+| `previous_gpa` | `semester_gpa` | Calculated from module results and credits in the completed source term. |
+| `attendance` | `attendance` | Matched sample row. Module attendance is reconciled to this term value. |
+| `assignment_score`, `quiz_score`, `midterm_marks`, `final_marks` | Same names | Copied together from the matched sample row. |
+| `study_hours_week`, `workload_level` | Same names | Copied from the same matched sample row. |
+| `backlog_subjects` | `backlog_subjects` | Cumulative count of completed modules graded F under the demo policy. |
+
+The generator compares synthetic GPA, CGPA, an attendance hint, and backlog to the sample rows. It scales the differences by column spread and gives backlog a quarter of the weight of each other matching feature. `kaggle_source_ref` identifies the donor CSV by filename, SHA-256, and one-based parsed data row. `kaggle_feature_names` identifies the seven inputs taken from that row. The demo imports academic facts and model inputs. Predictions come from the saved model at publication time.
+
+See the [generator](../database/seed.py), [academic policy](../database/README.md#demo-academic-policy), and [publisher mapping](../services/forecast_publisher.py).
 
 ## Strongest links to the target (correlation)
 
