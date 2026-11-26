@@ -21,19 +21,19 @@ You are helping a team member who is **not a programmer**. Assume they cannot re
 - Follow `WORKFLOW.md` for saving and sharing work.
 
 ## Project setup (read `PROJECT.md` for the full layout)
-- The app is **Streamlit only**. There is no FastAPI and no separate API server.
-- Data is stored in **Supabase** (cloud Postgres). Only files in `services/` may talk to it. Pages in `views/` must never query the database directly.
+- **Streamlit** serves the app. Follow [the backend integration guide](../services/README.md) for the dashboard contract.
+- **Supabase** hosts PostgreSQL. Route application requests through `services/`. The database owner runs reviewed schema and data operations separately.
 - Pages arrange things on screen. Chart code goes in `components/`, data/database/model code goes in `services/`.
 
 ## Data and privacy (strict)
-- Never commit raw data (`data/raw/`) or any real student data, names, IDs, or grades. Only `data/sample/` is committed.
-- Never put passwords, API keys, or secrets in code or committed files. Supabase keys go in `.streamlit/secrets.toml` (never committed) and in the deployment platform's secrets settings.
+- Keep raw data (`data/raw/`), processed data (`data/processed/`), and any real student records out of Git. The checked-in dataset is the synthetic sample in `data/sample/`.
+- Never put passwords, API keys, or secrets in code or committed files. Use `.streamlit/secrets.toml` or deployment secrets for the dashboard's publishable key. Use a trusted operator environment for the publisher's secret key.
 - The interface must always show that predictions are estimates.
-- A student may only ever see their own data. A teacher may only see their own classes.
+- A student may only see their own academic records and valid published forecasts. A teacher may see enrolments and module results for their assigned offerings. Semester GPA/CGPA and forecasts are student-only for dashboard users.
 
 ## Database rules
-- `database/schema.sql` is the source of truth for the tables (`students`, `subjects`, `grades`, and a fourth table still to be decided). Update it first whenever a table changes.
-- Only the Database and services role changes tables. Others ask through `/docs/requests.md`.
+- `database/schema.sql` is the source of truth for all seven application tables and their access rules. Update it first whenever the schema changes. Use the [database runbook](../database/README.md) for approved deployments.
+- Only the Database and services role changes tables. Coordinate cross-owner requests through [the team workflow](WORKFLOW.md).
 - Never drop, truncate, or delete tables or rows without the user and the project lead confirming first.
 - Keep Row Level Security turned on for every table.
 
@@ -49,4 +49,4 @@ You are helping a team member who is **not a programmer**. Assume they cannot re
 - One responsibility per file where possible.
 
 ## When unsure
-Stop and ask the user, or note the question in `/docs/requests.md`. Don't guess on anything involving student data.
+Ask the user when decisions involve unknown student data. Use the team's request log for follow-up with another owner.
